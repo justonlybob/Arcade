@@ -21,6 +21,10 @@ function initGhosts() {
     ghosts = [];
 }
 
+function allGhostsDead() {
+    return ghosts.length === 0;
+}
+
 // Spawn a single ghost
 function spawnGhost(canvasWidth, canvasHeight) {
     const side = Math.floor(Math.random() * 4);

@@ -13,13 +13,13 @@ const ZOMBIE_CONFIG = {
 
 // Zombies array
 let zombies = [];
-let wave = 1;
+let currentWave = 1; // Renamed from 'wave' to avoid confusion with wave logic
 let zombiesKilled = 0;
 
 // Initialize zombies
 function initZombies() {
     zombies = [];
-    wave = 1;
+    currentWave = 1;
     zombiesKilled = 0;
 }
 
@@ -36,8 +36,8 @@ function spawnZombie(canvasWidth, canvasHeight) {
         case 3: x = -padding; y = Math.random() * canvasHeight; break;
     }
 
-    const speedMultiplier = 1 + (wave * 0.15);
-    const healthMultiplier = 1 + Math.floor(wave / 2);
+    const speedMultiplier = 1 + (currentWave * 0.15);
+    const healthMultiplier = 1 + Math.floor(currentWave / 2);
     
     zombies.push({
         x: x,
@@ -47,13 +47,13 @@ function spawnZombie(canvasWidth, canvasHeight) {
         health: ZOMBIE_CONFIG.BASE_HEALTH + healthMultiplier,
         maxHealth: ZOMBIE_CONFIG.BASE_HEALTH + healthMultiplier,
         color: ZOMBIE_CONFIG.COLOR,
-        wave: wave
+        wave: currentWave
     });
 }
 
 // Spawn a wave of zombies
 function spawnWave(canvasWidth, canvasHeight) {
-    const zombieCount = 5 + (wave * 3);
+    const zombieCount = 5 + (currentWave * 2);
     for (let i = 0; i < zombieCount; i++) {
         setTimeout(() => {
             if (gameRunning) {
@@ -89,111 +89,107 @@ function drawZombies(ctx, visibilityRadius) {
         const dy = zombie.y - player.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < ZOMBIE_CONFIG.VISIBILITY_DISTANCE) {
-            ctx.save();
-            ctx.globalAlpha = Math.max(ZOMBIE_CONFIG.MIN_ALPHA, 1 - (dist / ZOMBIE_CONFIG.VISIBILITY_DISTANCE));
+        // Remove distance check to make them always visible and bright
+        ctx.save();
+        ctx.globalAlpha = 1.0; // Full brightness
+        
+        const time = Date.now() * 0.001;
+        const healthPercent = zombie.health / zombie.maxHealth;
+        const wobble = Math.sin(time * 3 + zombie.x) * 1.5;
+        
+        // Enhanced glow
+        ctx.shadowColor = healthPercent > 0.5 ? '#ff3333' : '#ff6600';
+        ctx.shadowBlur = 15; // Consistent glow
+        ctx.shadowOffsetX = wobble;
+        ctx.shadowOffsetY = wobble;
+        
+        // Main body with brighter gradient
+        const bodyGradient = ctx.createRadialGradient(zombie.x, zombie.y, 0, zombie.x, zombie.y, zombie.radius);
+        bodyGradient.addColorStop(0, '#ff6666');
+        bodyGradient.addColorStop(0.6, '#ff0000');
+        bodyGradient.addColorStop(1, '#cc0000');
+        
+        ctx.fillStyle = bodyGradient;
+        ctx.beginPath();
+        ctx.arc(zombie.x, zombie.y, zombie.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Outer jagged ring (menacing spikes)
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 2;
+        const spikeCount = 8;
+        for (let i = 0; i < spikeCount; i++) {
+            const angle = (i / spikeCount) * Math.PI * 2;
+            const spikeLength = zombie.radius * 0.4 + Math.sin(time * 4 + i) * 2;
+            const x1 = zombie.x + Math.cos(angle) * zombie.radius;
+            const y1 = zombie.y + Math.sin(angle) * zombie.radius;
+            const x2 = zombie.x + Math.cos(angle) * (zombie.radius + spikeLength);
+            const y2 = zombie.y + Math.sin(angle) * (zombie.radius + spikeLength);
             
-            const time = Date.now() * 0.001;
-            const healthPercent = zombie.health / zombie.maxHealth;
-            const wobble = Math.sin(time * 3 + zombie.x) * 1.5;
-            
-            // Enhanced glow
-            if (dist < ZOMBIE_CONFIG.GLOW_DISTANCE) {
-                const glowIntensity = 1 - (dist / ZOMBIE_CONFIG.GLOW_DISTANCE);
-                ctx.shadowColor = healthPercent > 0.5 ? '#ff0000' : '#ff3300';
-                ctx.shadowBlur = 30 * glowIntensity;
-                ctx.shadowOffsetX = wobble;
-                ctx.shadowOffsetY = wobble;
-            }
-            
-            // Main body with gradient
-            const bodyGradient = ctx.createRadialGradient(zombie.x, zombie.y, 0, zombie.x, zombie.y, zombie.radius);
-            bodyGradient.addColorStop(0, '#ff3333');
-            bodyGradient.addColorStop(0.6, '#ff0000');
-            bodyGradient.addColorStop(1, '#990000');
-            
-            ctx.fillStyle = bodyGradient;
             ctx.beginPath();
-            ctx.arc(zombie.x, zombie.y, zombie.radius, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Outer jagged ring (menacing spikes)
-            ctx.strokeStyle = '#ff0000';
-            ctx.lineWidth = 2;
-            const spikeCount = 8;
-            for (let i = 0; i < spikeCount; i++) {
-                const angle = (i / spikeCount) * Math.PI * 2;
-                const spikeLength = zombie.radius * 0.4 + Math.sin(time * 4 + i) * 2;
-                const x1 = zombie.x + Math.cos(angle) * zombie.radius;
-                const y1 = zombie.y + Math.sin(angle) * zombie.radius;
-                const x2 = zombie.x + Math.cos(angle) * (zombie.radius + spikeLength);
-                const y2 = zombie.y + Math.sin(angle) * (zombie.radius + spikeLength);
-                
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-            }
-            
-            // Border ring
-            ctx.strokeStyle = '#cc0000';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(zombie.x, zombie.y, zombie.radius, 0, Math.PI * 2);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
             ctx.stroke();
-            
-            // Health bar (arc style)
-            const healthColor = healthPercent > 0.66 ? '#00ff00' : 
-                               healthPercent > 0.33 ? '#ffff00' : '#ff0000';
-            ctx.strokeStyle = healthColor;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.arc(zombie.x, zombie.y, zombie.radius + 4, 0, Math.PI * 2 * healthPercent);
-            ctx.stroke();
-            
-            // Menacing eyes with glow
-            ctx.fillStyle = '#ffff00';
-            ctx.shadowColor = '#ffff00';
-            ctx.shadowBlur = 8;
-            const eyeOffsetX = Math.cos(time * 2) * 1;
-            const eyeOffsetY = Math.sin(time * 2.5) * 1;
-            
-            ctx.beginPath();
-            ctx.arc(zombie.x - 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 2.5, 0, Math.PI * 2);
-            ctx.arc(zombie.x + 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Pupils (red for menace)
-            ctx.fillStyle = '#ff0000';
-            ctx.shadowColor = '#ff0000';
-            ctx.shadowBlur = 4;
-            ctx.beginPath();
-            ctx.arc(zombie.x - 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 1.2, 0, Math.PI * 2);
-            ctx.arc(zombie.x + 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 1.2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Mouth (menacing grin)
-            ctx.strokeStyle = '#cc0000';
-            ctx.lineWidth = 1.5;
-            ctx.shadowColor = '#ff0000';
-            ctx.shadowBlur = 6;
-            ctx.beginPath();
-            ctx.arc(zombie.x, zombie.y + 3, 4, 0, Math.PI, false);
-            ctx.stroke();
-            
-            ctx.restore();
         }
+        
+        // Border ring
+        ctx.strokeStyle = '#cc0000';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(zombie.x, zombie.y, zombie.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Health bar (arc style)
+        const healthColor = healthPercent > 0.66 ? '#00ff00' : 
+                           healthPercent > 0.33 ? '#ffff00' : '#ff0000';
+        ctx.strokeStyle = healthColor;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(zombie.x, zombie.y, zombie.radius + 4, 0, Math.PI * 2 * healthPercent);
+        ctx.stroke();
+        
+        // Menacing eyes with glow
+        ctx.fillStyle = '#ffff00';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 8;
+        const eyeOffsetX = Math.cos(time * 2) * 1;
+        const eyeOffsetY = Math.sin(time * 2.5) * 1;
+        
+        ctx.beginPath();
+        ctx.arc(zombie.x - 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 2.5, 0, Math.PI * 2);
+        ctx.arc(zombie.x + 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Pupils (red for menace)
+        ctx.fillStyle = '#ff0000';
+        ctx.shadowColor = '#ff0000';
+        ctx.shadowBlur = 4;
+        ctx.beginPath();
+        ctx.arc(zombie.x - 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 1.2, 0, Math.PI * 2);
+        ctx.arc(zombie.x + 5 + eyeOffsetX, zombie.y - 4 + eyeOffsetY, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Mouth (menacing grin)
+        ctx.strokeStyle = '#cc0000';
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = '#ff0000';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(zombie.x, zombie.y + 3, 4, 0, Math.PI, false);
+        ctx.stroke();
+        
+        ctx.restore();
     });
 }
 
 // Get current wave
 function getCurrentWave() {
-    return wave;
+    return currentWave;
 }
 
 // Increment wave
 function nextWave() {
-    wave++;
+    currentWave++;
 }
 
 // Check if all zombies are dead

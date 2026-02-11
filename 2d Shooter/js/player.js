@@ -59,10 +59,10 @@ function updatePlayer() {
 }
 
 // Draw player with improved visuals
-function drawPlayer(ctx) {aaaaaaaaaa
+function drawPlayer(ctx) {
     const shouldFlash = player.invulnerable && Math.floor(Date.now() / 100) % 2 === 0;
     const time = Date.now() * 0.001;
-    S
+    
     // Glow effect
     ctx.shadowColor = shouldFlash ? '#ffffff' : '#00ff00';
     ctx.shadowBlur = 20 + Math.sin(time) * 5;

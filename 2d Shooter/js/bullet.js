@@ -22,7 +22,8 @@ function shootBullet() {
     if (bullets.length >= BULLET_CONFIG.MAX_BULLETS) return;
     
     const angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
-    const speed = BULLET_CONFIG.SPEED + (wave * 0.1);
+    // Use currentWave (renamed from wave) or default to 1
+    const speed = BULLET_CONFIG.SPEED + ((typeof currentWave !== 'undefined' ? currentWave : 1) * 0.1);
     
     bullets.push({
         x: player.x + Math.cos(angle) * (player.radius + 5),
@@ -48,25 +49,20 @@ function updateBullets(canvasWidth, canvasHeight) {
 }
 
 // Draw bullets with improved visuals
-function drawBullets(ctx, visibilityRadius) {
-    const bulletVisibilityRadius = 100;
-    
+function drawBullets(ctx) {
     bullets.forEach(bullet => {
-        const dx = bullet.x - player.x;
-        const dy = bullet.y - player.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < bulletVisibilityRadius) {
-            ctx.save();
-            ctx.globalAlpha = Math.max(0.3, 1 - (dist / bulletVisibilityRadius));
-            ctx.fillStyle = bullet.color;
-            ctx.shadowColor = '#ffff00';
-            ctx.shadowBlur = 8;
-            ctx.beginPath();
-            ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
+        ctx.save();
+        ctx.globalAlpha = 1.0; // Always full brightness
+        ctx.fillStyle = bullet.color;
+        
+        // Brighter glow for "brighter" theme
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 12;
+        
+        ctx.beginPath();
+        ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
     });
 }
 

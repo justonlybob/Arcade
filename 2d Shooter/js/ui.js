@@ -38,9 +38,21 @@ function updateUI() {
         gameStats.bestWave = currentWave;
     }
     
-    document.getElementById('lives').textContent = player.lives;
-    document.getElementById('score').textContent = score;
-    document.getElementById('wave').textContent = currentWave;
+    const livesElement = document.getElementById('lives');
+    const scoreElement = document.getElementById('score');
+    const waveElement = document.getElementById('wave');
+    
+    if (livesElement) livesElement.textContent = player.lives;
+    if (scoreElement) scoreElement.textContent = score;
+    if (waveElement) waveElement.textContent = currentWave;
+}
+
+function getGameStats() {
+    return {
+        score: score,
+        stats: gameStats,
+        wave: currentWave
+    };
 }
 
 // Get current score
