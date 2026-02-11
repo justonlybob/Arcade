@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Factory Escape</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>📱 Phone Factory Escape 🏭</h1>
+            <p class="subtitle">Work for the evil boss and earn your freedom!</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Phones Made</h3>
+                <div class="stat-value" id="phonesCount">0</div>
+            </div>
+            <div class="stat-box">
+                <h3>Time Worked</h3>
+                <div class="stat-value" id="timeCount">0s</div>
+            </div>
+            <div class="stat-box">
+                <h3>Efficiency</h3>
+                <div class="stat-value" id="efficiencyCount">0/min</div>
+            </div>
+        </div>
+
+        <div class="boss-section">
+            <div class="boss-emoji" id="bossEmoji">😈</div>
+            <div class="boss-message" id="bossMessage">Get to work! Make phones NOW!</div>
+            <div class="boss-anger" id="bossAnger">Anger Level: 0%</div>
+        </div>
+
+        <div class="escape-meter">
+            <h3>🚪 Escape Readiness</h3>
+            <div class="meter-container">
+                <div class="meter-fill" id="escapeMeter">
+                    <span id="meterPercent">0%</span>
+                </div>
+            </div>
+            <div class="escape-chance" id="escapeChance">Escape Chance: 0%</div>
+        </div>
+
+        <div class="game-area">
+            <div class="phone-display">📱</div>
+            <button class="make-phone-btn" id="makePhoneBtn">Make Phone (+1)</button>
+            <div class="combo-indicator" id="comboIndicator"></div>
+            <button class="escape-btn" id="escapeBtn" disabled>ATTEMPT ESCAPE</button>
+            <div class="difficulty-indicator" id="difficultyBadge">Easy</div>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-emoji" id="modalEmoji">🎉</div>
+            <div class="modal-title" id="modalTitle">You Escaped!</div>
+            <div class="modal-text" id="modalText">Congratulations! You made it out!</div>
+            <div class="modal-stats" id="modalStats">
+                <p>Phones Made: <strong id="finalPhones">0</strong></p>
+                <p>Time Worked: <strong id="finalTime">0s</strong></p>
+            </div>
+            <button class="modal-btn" onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>

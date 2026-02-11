@@ -1,0 +1,44 @@
+{
+  "towers": [
+    {
+      "name": "Basic Tower",
+      "cost": 100,
+      "damage": 10,
+      "range": 100,
+      "fireRate": 1,
+      "description": "A basic tower that deals moderate damage."
+    },
+    {
+      "name": "Sniper Tower",
+      "cost": 300,
+      "damage": 25,
+      "range": 200,
+      "fireRate": 0.5,
+      "description": "A long-range tower that deals high damage."
+    },
+    {
+      "name": "Splash Tower",
+      "cost": 200,
+      "damage": 15,
+      "range": 150,
+      "fireRate": 1.5,
+      "description": "A tower that deals area damage to multiple enemies."
+    },
+    {
+      "name": "Laser Tower",
+      "cost": 400,
+      "damage": 40,
+      "range": 250,
+      "fireRate": 0.8,
+      "description": "A high-tech tower that fires a continuous laser."
+    },
+    {
+      "name": "Rocket Tower",
+      "cost": 500,
+      "damage": 50,
+      "range": 180,
+      "fireRate": 1,
+      "description": "A tower that launches rockets, dealing heavy damage."
+    }
+  ]
+}
