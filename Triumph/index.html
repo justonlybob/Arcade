@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIUMPH - Arena Fighter</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="back-link">
+        <a href="../index.html">&larr; Back to Arcade</a>
+    </div>
+
+    <div id="game-container">
+        <!-- Character Selection Screen -->
+        <div id="selection-screen" class="screen">
+            <h1>SELECT YOUR CHAMPION</h1>
+            <p>Choose your hero to begin the gauntlet</p>
+            <div id="character-grid" class="grid"></div>
+        </div>
+
+        <!-- Battle Screen -->
+        <div id="battle-screen" class="screen hidden">
+            <div class="battle-header">
+                <div class="stage-info">Triumph Gauntlet: <span id="stage-count">1 / 5</span></div>
+            </div>
+            
+            <div class="arena">
+                <div class="fighter enemy" id="enemy-fighter">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="enemy-hp"></div>
+                        <span class="hp-text" id="enemy-hp-text">100/100</span>
+                    </div>
+                    <div class="sprite-container">
+                        <div class="sprite" id="enemy-sprite"></div>
+                        <div class="effect-layer" id="enemy-effects"></div>
+                    </div>
+                    <h2 id="enemy-name">Opponent</h2>
+                </div>
+
+                <div class="vs-text">VS</div>
+
+                <div class="fighter player" id="player-fighter">
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="player-hp"></div>
+                        <span class="hp-text" id="player-hp-text">100/100</span>
+                    </div>
+                    <div class="sprite-container">
+                        <div class="sprite" id="player-sprite"></div>
+                        <div class="effect-layer" id="player-effects"></div>
+                    </div>
+                    <h2 id="player-name">Player</h2>
+                </div>
+            </div>
+
+            <div class="battle-ui">
+                <div id="battle-log">Welcome to the Arena! Prepare for battle.</div>
+                <div id="action-buttons" class="actions">
+                    <!-- Buttons will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen hidden">
+            <h1 id="result-title">TRIUMPH!</h1>
+            <p id="result-message">You have conquered the gauntlet.</p>
+            <button class="menu-btn" onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
